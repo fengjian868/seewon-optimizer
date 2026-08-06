@@ -52,6 +52,7 @@ desktop.ini
 !教学工具/.gitkeep
 壁纸/.gitkeep
 
-# 不提交实际图标文件（保留目录）
+# 不提交生成的二进制图标（保留目录与生成脚本）
 assets/icons/*
 !assets/icons/.gitkeep
+!assets/icons/generate_icon.py
