@@ -1,0 +1,56 @@
+[
+  {
+    "id": "seewo_easinote",
+    "name": "希沃白板",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "📋",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\CVTE\\EasiNote",
+      "name": "InstallDir"
+    },
+    "offline_file": "SeewoEasinoteSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_classmanager",
+    "name": "希沃班级管理",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "👨‍🏫",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\ClassManager",
+      "name": "InstallPath"
+    },
+    "offline_file": "SeewoClassManagerSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "math_tool",
+    "name": "数学教学工具",
+    "version": "1.0",
+    "deploy": "extract",
+    "icon": "➗",
+    "detect_path": "D:\\教学工具\\数学教学工具\\MathTool.exe",
+    "offline_file": "数学教学工具.zip",
+    "download_url": "",
+    "target_dir": "D:\\教学工具\\数学教学工具",
+    "main_exe": "MathTool.exe"
+  },
+  {
+    "id": "chinese_tool",
+    "name": "语文教学工具",
+    "version": "1.0",
+    "deploy": "extract",
+    "icon": "📖",
+    "detect_path": "D:\\教学工具\\语文教学工具\\ChineseTool.exe",
+    "offline_file": "语文教学工具.zip",
+    "download_url": "",
+    "target_dir": "D:\\教学工具\\语文教学工具",
+    "main_exe": "ChineseTool.exe"
+  }
+]

@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg
+
+# 虚拟环境
+venv/
+.venv/
+env/
+ENV/
+
+# PyInstaller
+*.spec.bak
+_build/
+_output/
+
+# 运行时生成
+backup/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 用户资源（不提交安装包/壁纸，保持仓库干净）
+常用软件/*
+教学工具/*
+壁纸/*
+!常用软件/.gitkeep
+!教学工具/.gitkeep
+壁纸/.gitkeep
+
+# 不提交实际图标文件（保留目录）
+assets/icons/*
+!assets/icons/.gitkeep

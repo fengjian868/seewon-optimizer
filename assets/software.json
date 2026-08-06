@@ -1,0 +1,59 @@
+[
+  {
+    "id": "chrome",
+    "name": "Google Chrome 浏览器",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "🌐",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+      "name": ""
+    },
+    "detect_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "offline_file": "ChromeSetup.exe",
+    "download_url": "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B00000000-0000-0000-0000-000000000000%7D%26lang%3Dzh-CN%26browser%3D3%26usagestats%3D0%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-stable-statsdef_1%26installdataindex%3Dempty/update2/installers/ChromeStandaloneSetup64.exe",
+    "silent_args": "/silent /install"
+  },
+  {
+    "id": "7zip",
+    "name": "7-Zip 压缩工具",
+    "version": "23.01",
+    "deploy": "install",
+    "icon": "🗜️",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\7-Zip",
+      "name": "Path"
+    },
+    "offline_file": "7z2301-x64.exe",
+    "download_url": "https://www.7-zip.org/a/7z2301-x64.exe",
+    "silent_args": "/S"
+  },
+  {
+    "id": "wps",
+    "name": "WPS Office",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "📄",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Kingsoft\\Office",
+      "name": "InstallPath"
+    },
+    "offline_file": "WPSOffice.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "sumatrapdf",
+    "name": "SumatraPDF 阅读器",
+    "version": "3.5.2",
+    "deploy": "install",
+    "icon": "📕",
+    "detect_path": "C:\\Program Files\\SumatraPDF\\SumatraPDF.exe",
+    "offline_file": "SumatraPDF-prerel-64-install.exe",
+    "download_url": "https://kjkpubsf.s3.amazonaws.com/sumatrapdf/prerel/SumatraPDF-prerel-64-install.exe",
+    "silent_args": "-silent"
+  }
+]
