@@ -26,6 +26,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: 生成应用图标
+        shell: pwsh
+        run: python assets/icons/generate_icon.py
+
       - name: 构建 EXE
         shell: pwsh
         run: |
