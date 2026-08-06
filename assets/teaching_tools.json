@@ -12,7 +12,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\EasiNote5\\EasiNote5.exe",
     "offline_file": "SeewoEasinoteSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -28,7 +28,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\SeewoVideoBooth\\SeewoVideoBooth.exe",
     "offline_file": "SeewoVideoBoothSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -44,7 +44,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\EasiClassroom\\EasiClassroom.exe",
     "offline_file": "SeewoYiketangSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -60,7 +60,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\ClassMaster\\ClassMaster.exe",
     "offline_file": "SeewoClassMasterSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -76,7 +76,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\SeewoManager\\SeewoManager.exe",
     "offline_file": "SeewoManagerSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -92,7 +92,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\SeewoBrowser\\SeewoBrowser.exe",
     "offline_file": "SeewoBrowserSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -108,7 +108,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\ScreenShare\\ScreenShare.exe",
     "offline_file": "SeewoScreenShareSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -124,7 +124,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\CentralControl\\CentralControl.exe",
     "offline_file": "SeewoCentralControlSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -140,7 +140,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\EasiPrepare\\EasiPrepare.exe",
     "offline_file": "SeewoEasiPrepareSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   },
   {
@@ -156,7 +156,7 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\CloudClassroom\\CloudClassroom.exe",
     "offline_file": "SeewoCloudClassroomSetup.exe",
-    "download_url": "",
+    "download_url": "https://easinote.seewo.com/",
     "silent_args": "/S"
   }
 ]

@@ -44,7 +44,7 @@
     },
     "detect_path": "C:\\Program Files\\Douyin\\Douyin.exe",
     "offline_file": "DouyinSetup.exe",
-    "download_url": "",
+    "download_url": "https://www.douyin.com/download/pc",
     "silent_args": "/S"
   },
   {
@@ -60,7 +60,7 @@
     },
     "detect_path": "C:\\Program Files\\Kingsoft\\WPS Office\\office6\\wps.exe",
     "offline_file": "WPSOffice.exe",
-    "download_url": "",
+    "download_url": "https://www.wps.cn/",
     "silent_args": "/S"
   },
   {
@@ -92,7 +92,7 @@
     },
     "detect_path": "C:\\Program Files (x86)\\KuGou\\KGMusic\\KuGou.exe",
     "offline_file": "KuGouSetup.exe",
-    "download_url": "",
+    "download_url": "http://download.kugou.com/dl/kugou_pc",
     "silent_args": "/S"
   },
   {
@@ -108,7 +108,7 @@
     },
     "detect_path": "C:\\Program Files\\QishuiMusic\\QishuiMusic.exe",
     "offline_file": "QishuiMusicSetup.exe",
-    "download_url": "",
+    "download_url": "https://www.qishui.com/download",
     "silent_args": "/S"
   },
   {

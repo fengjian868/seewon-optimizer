@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import tempfile
 import urllib.request
+import webbrowser
 import zipfile
 from dataclasses import dataclass, field
 from typing import Callable
@@ -60,6 +61,7 @@ class InstallResult:
     success: bool
     message: str
     skipped: bool = False
+    manual_url: str = ""  # 需要用户手动下载时的官网链接
 
 
 _HIVE = {
@@ -145,8 +147,16 @@ class Installer:
         status(meta.id, "获取安装包…")
 
         # 2. 获取安装包
-        pkg_path = self._resolve_package(meta, log, status)
+        pkg_path, manual_url = self._resolve_package(meta, log, status)
         if not pkg_path:
+            if manual_url:
+                status(meta.id, "需手动下载")
+                log(f"  该软件官网未提供直接下载链接，请手动下载后"
+                      f"放入『{self.local_dir}』并重命名为 {meta.offline_file}")
+                return InstallResult(
+                    meta.id, False, "需手动下载安装包",
+                    manual_url=manual_url,
+                )
             status(meta.id, "失败：无安装包")
             return InstallResult(meta.id, False, "无法获取安装包")
 
@@ -176,24 +186,41 @@ class Installer:
 
     # ---- 获取安装包 ----
     def _resolve_package(self, meta: SoftwareMeta,
-                         log: LogCB, status: StatusCB) -> str | None:
+                         log: LogCB, status: StatusCB) -> tuple[str | None, str]:
+        """返回 (包路径, 手动下载链接)。"""
         # 优先本地离线包
         if meta.offline_file:
             local_path = os.path.join(self.local_dir, meta.offline_file)
             if os.path.exists(local_path):
                 log(f"  使用本地离线包：{meta.offline_file}")
-                return local_path
+                return local_path, ""
             # 本地按扩展名模糊匹配
             if os.path.isdir(self.local_dir):
                 for fn in os.listdir(self.local_dir):
                     if fn.lower().startswith(meta.id.lower()):
                         log(f"  使用本地离线包：{fn}")
-                        return os.path.join(self.local_dir, fn)
+                        return os.path.join(self.local_dir, fn), ""
         # 在线下载
         if meta.download_url:
-            status(meta.id, "下载中…")
-            return self._download(meta, log, status)
-        return None
+            if self._is_direct_download_url(meta.download_url):
+                status(meta.id, "下载中…")
+                pkg = self._download(meta, log, status)
+                return pkg, ""
+            # 不是直链，返回官网链接让用户手动下载
+            return None, meta.download_url
+        return None, ""
+
+    @staticmethod
+    def _is_direct_download_url(url: str) -> bool:
+        """判断 URL 是否为可直接下载安装包的链接（支持 302 跳转）。"""
+        low = url.lower()
+        direct_exts = (".exe", ".zip", ".7z", ".rar", ".msi")
+        # 以常见安装包扩展名结尾，或包含 dl/download 等下载接口路径
+        if low.endswith(direct_exts):
+            return True
+        if "/dl/" in low or "/download" in low:
+            return True
+        return False
 
     def _download(self, meta: SoftwareMeta,
                   log: LogCB, status: StatusCB) -> str | None:
@@ -203,9 +230,28 @@ class Installer:
         else:
             fname = meta.offline_file
         tmp = os.path.join(tempfile.gettempdir(), "seewon_dl_" + fname)
+
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
+            ),
+            "Accept": "*/*",
+        }
+
+        def report(block_num: int, block_size: int, total_size: int) -> None:
+            if total_size <= 0:
+                return
+            downloaded = block_num * block_size
+            pct = min(100, int(downloaded * 100 / total_size))
+            status(meta.id, f"下载中 {pct}%")
+
         try:
             log(f"  下载：{meta.download_url}")
-            urllib.request.urlretrieve(meta.download_url, tmp)
+            req = urllib.request.Request(meta.download_url, headers=headers)
+            # urlretrieve 默认跟随 302/301 重定向
+            urllib.request.urlretrieve(req, tmp, reporthook=report)
             log(f"  下载完成：{tmp}")
             return tmp
         except Exception as e:

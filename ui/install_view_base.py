@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import threading
 import tkinter as tk
+import webbrowser
 from tkinter import ttk, messagebox
 
 from core import paths
@@ -169,11 +170,27 @@ class InstallViewBase(SubPage):
     def _on_done(self, results) -> None:
         ok = sum(1 for r in results if r.success)
         fail = [r for r in results if not r.success]
+        manual = [r for r in fail if r.manual_url]
         self._append_log("=" * 50)
         self._append_log(f"完成：成功 {ok}，失败 {len(fail)}")
         for r in fail:
             self._append_log(f"  ✗ {r.item_id}: {r.message}")
-        if fail:
+        if manual:
+            names = ", ".join(r.item_id for r in manual)
+            self._append_log(f"需手动下载：{names}")
+            if messagebox.askyesno(
+                "需手动下载",
+                f"以下软件官网未提供直接下载链接，需要您手动下载安装包后"
+                f"放入『{self.local_dir}』文件夹：\n\n{names}\n\n"
+                f"是否现在打开它们的官网下载页？",
+            ):
+                for r in manual:
+                    try:
+                        webbrowser.open(r.manual_url)
+                    except Exception:
+                        pass
+            self._start_btn.config(text="开始安装", command=self._on_start)
+        elif fail:
             self._append_log("可点『重试失败项』重新安装失败的项")
             self._start_btn.config(text="重试失败项",
                                    command=self._on_retry_fail)
