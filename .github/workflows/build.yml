@@ -59,3 +59,39 @@ jobs:
           path: artifact/
           retention-days: 90
           compression-level: 0    # exe 已是二进制，不再压缩
+
+      - name: 生成构建总结
+        shell: pwsh
+        run: |
+          $sha = "${{ github.sha }}"
+          $runId = "${{ github.run_id }}"
+          $repo = "${{ github.repository }}"
+          $branch = "${{ github.ref_name }}"
+          $shortSha = $sha.Substring(0, 7)
+          $artifactName = "seewon-optimizer-exe"
+          $zipName = "$artifactName.zip"
+
+          $artifactUrl = "https://github.com/$repo/actions/runs/$runId/artifacts"
+          $nightlyUrl = "https://nightly.link/$repo/workflows/build/$branch/$zipName"
+          $ghproxyFastlyUrl = "https://ghproxy-fastly.iigong.com/$nightlyUrl"
+          $ghproxyUrl = "https://ghproxy.com/$nightlyUrl"
+
+          $summary = @"
+          # Build Windows summary
+
+          ## 构建总结
+
+          - 提交：$sha
+          - 运行：#$runId
+          - 版本：$repo`@$shortSha
+
+          ## 下载
+
+          - [下载文物]($artifactUrl)
+          - [Nightly.link 下载]($nightlyUrl)
+          - [GhProxy Fastly Mirror]($ghproxyFastlyUrl)
+          - [GhProxy Mirror]($ghproxyUrl)
+          "@
+
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+          Write-Host "Build summary written to GITHUB_STEP_SUMMARY"
