@@ -44,7 +44,7 @@ def main() -> None:
         sizes=[(s, s) for s in sizes],
         append_images=imgs[1:],
     )
-    print(f"图标已生成：{out_path}")
+    print(f"icon generated: {out_path}")
 
 
 if __name__ == "__main__":
