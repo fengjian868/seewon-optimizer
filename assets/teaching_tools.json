@@ -1,7 +1,7 @@
 [
   {
     "id": "seewo_easinote",
-    "name": "希沃白板",
+    "name": "希沃白板 5",
     "version": "最新",
     "deploy": "install",
     "icon": "📋",
@@ -28,6 +28,134 @@
     },
     "detect_path": "C:\\Program Files\\Seewo\\SeewoVideoBooth\\SeewoVideoBooth.exe",
     "offline_file": "SeewoVideoBoothSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_yiketang",
+    "name": "希沃易课堂",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "📚",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\EasiClassroom",
+      "name": "InstallPath"
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\EasiClassroom\\EasiClassroom.exe",
+    "offline_file": "SeewoYiketangSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_class_master",
+    "name": "希沃班级优化大师",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "🏫",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\ClassMaster",
+      "name": "InstallPath"
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\ClassMaster\\ClassMaster.exe",
+    "offline_file": "SeewoClassMasterSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_manager",
+    "name": "希沃管家",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "🛡️",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\SeewoManager",
+      "name": "InstallPath"
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\SeewoManager\\SeewoManager.exe",
+    "offline_file": "SeewoManagerSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_browser",
+    "name": "希沃浏览器",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "🌐",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\SeewoBrowser.exe",
+      "name": ""
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\SeewoBrowser\\SeewoBrowser.exe",
+    "offline_file": "SeewoBrowserSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_screen_share",
+    "name": "希沃传屏",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "📡",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\ScreenShare",
+      "name": "InstallPath"
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\ScreenShare\\ScreenShare.exe",
+    "offline_file": "SeewoScreenShareSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_central_control",
+    "name": "希沃集控",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "🖥️",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\CentralControl",
+      "name": "InstallPath"
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\CentralControl\\CentralControl.exe",
+    "offline_file": "SeewoCentralControlSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_preparation",
+    "name": "希沃备课工具",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "✏️",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\EasiPrepare",
+      "name": "InstallPath"
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\EasiPrepare\\EasiPrepare.exe",
+    "offline_file": "SeewoEasiPrepareSetup.exe",
+    "download_url": "",
+    "silent_args": "/S"
+  },
+  {
+    "id": "seewo_cloud_classroom",
+    "name": "希沃云课堂",
+    "version": "最新",
+    "deploy": "install",
+    "icon": "☁️",
+    "detect_reg": {
+      "hive": "HKLM",
+      "key": "SOFTWARE\\Seewo\\CloudClassroom",
+      "name": "InstallPath"
+    },
+    "detect_path": "C:\\Program Files\\Seewo\\CloudClassroom\\CloudClassroom.exe",
+    "offline_file": "SeewoCloudClassroomSetup.exe",
     "download_url": "",
     "silent_args": "/S"
   }
