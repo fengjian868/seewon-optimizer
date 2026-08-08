@@ -46,6 +46,8 @@ jobs:
           # exe 文件名是中文，dist 下只有一个 exe
           $exe = Get-ChildItem -Path dist -Filter *.exe | Select-Object -First 1
           Copy-Item $exe.FullName -Destination "$out\$($exe.Name)"
+          # 把壁纸文件夹一起打包，下载后解压即可用
+          Copy-Item -Path "壁纸" -Destination "$out\壁纸" -Recurse -Force
           # 附带版本信息
           "Build: ${{ github.run_id }}" | Out-File "$out\build-info.txt" -Encoding utf8
           "Commit: ${{ github.sha }}" | Out-File "$out\build-info.txt" -Append -Encoding utf8
