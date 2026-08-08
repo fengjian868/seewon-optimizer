@@ -22,8 +22,6 @@ def _base(*parts: str) -> str:
 
 
 # 用户资源文件夹（exe 同级）
-SOFTWARE_DIR = _base("常用软件")
-TEACHING_DIR = _base("教学工具")
 WALLPAPER_DIR = _base("壁纸")
 
 # 运行时生成的备份目录
@@ -35,8 +33,6 @@ if getattr(sys, "frozen", False):
 else:
     ASSETS_DIR = _base("assets")
 
-SOFTWARE_META = os.path.join(ASSETS_DIR, "software.json")
-TEACHING_META = os.path.join(ASSETS_DIR, "teaching_tools.json")
 ICONS_DIR = os.path.join(ASSETS_DIR, "icons")
 
 # ---- 配色方案（希沃蓝白科技风）----
@@ -60,5 +56,5 @@ APP_VERSION = "1.0.0"
 
 def ensure_runtime_dirs() -> None:
     """启动时确保运行时目录存在。"""
-    for d in (BACKUP_DIR, SOFTWARE_DIR, TEACHING_DIR, WALLPAPER_DIR):
+    for d in (BACKUP_DIR, WALLPAPER_DIR):
         os.makedirs(d, exist_ok=True)

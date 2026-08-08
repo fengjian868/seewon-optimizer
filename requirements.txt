@@ -2,6 +2,4 @@
 # tkinter 随 Python 标准库自带，无需单独安装
 psutil>=5.9
 Pillow>=9.5
-py7zr>=0.20
-rarfile>=4.0
 pyinstaller>=5.13

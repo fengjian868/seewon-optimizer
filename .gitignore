@@ -44,13 +44,9 @@ backup/
 Thumbs.db
 desktop.ini
 
-# 用户资源（不提交安装包/壁纸，保持仓库干净）
-常用软件/*
-教学工具/*
+# 用户资源（不提交壁纸，保持仓库干净）
 壁纸/*
-!常用软件/.gitkeep
-!教学工具/.gitkeep
-壁纸/.gitkeep
+!壁纸/.gitkeep
 
 # 不提交生成的二进制图标（保留目录与生成脚本）
 assets/icons/*

@@ -30,12 +30,6 @@ class App(tk.Frame):
         elif name == "restore":
             from ui.restore import RestoreView
             self._current = RestoreView(self, back_command=lambda: self.show("home"))
-        elif name == "software":
-            from ui.software import SoftwareView
-            self._current = SoftwareView(self, back_command=lambda: self.show("home"))
-        elif name == "teaching":
-            from ui.teaching import TeachingView
-            self._current = TeachingView(self, back_command=lambda: self.show("home"))
         elif name == "wallpaper":
             from ui.wallpaper import WallpaperView
             self._current = WallpaperView(self, back_command=lambda: self.show("home"))
@@ -51,8 +45,6 @@ class HomeView(tk.Frame):
     CARDS = [
         ("🚀", "一键优化系统", "清理临时文件/启动项/服务，释放内存，关闭贴靠布局", "optimize"),
         ("↩️", "一键还原系统", "精确回滚本次优化，或回滚系统还原点", "restore"),
-        ("📦", "常用软件安装", "常用软件离线包优先、缺失在线下载，静默安装", "software"),
-        ("🎓", "教学工具安装", "教学工具安装或压缩包解压部署到 D 盘", "teaching"),
         ("🖼️", "希沃壁纸更换", "从壁纸文件夹列表选择并设为桌面/锁屏壁纸", "wallpaper"),
     ]
 

@@ -16,8 +16,6 @@ a = Analysis(
     binaries=[],
     datas=[
         # 内置资源随 exe 一起打包
-        ('assets/software.json', 'assets'),
-        ('assets/teaching_tools.json', 'assets'),
         ('assets/app.manifest', 'assets'),
         ('assets/icons', 'assets/icons'),
     ],
@@ -25,8 +23,6 @@ a = Analysis(
         'psutil',
         'PIL',
         'PIL._tkinter_finder',
-        'py7zr',
-        'rarfile',
     ],
     hookspath=[],
     runtime_hooks=[],
