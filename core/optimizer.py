@@ -51,10 +51,16 @@ HIVE_BY_NAME = {v: k for k, v in HIVE_MAP.items()}
 
 
 # ---- 安全名单：启动项/服务优化时保留 ----
+# 启动项只保留系统关键项 + 希沃视频展台/白板；其余非系统启动项一律禁用
 KEEP_STARTUP_KEYWORDS = (
-    "seewo", "seewon", "希沃", "security", "defend", " antivirus",
-    "firewall", "windows", "microsoft",
+    # 系统关键项
+    "security", "defend", "antivirus", "firewall", "windows", "microsoft",
+    # 希沃保留项：视频展台、白板
+    "视频展台", "visualpresenter", "seewopresenter",
+    "希沃白板", "easinote", "seewopinco", "pinco",
 )
+# 明确要禁用的常见希沃非必要启动项（仅用于注释说明，非保留即禁用）
+REMOVE_STARTUP_HINTS = ("无线投屏", "希沃课堂助手")
 KEEP_SERVICES = {
     "SeewoService", "SeewoMain", "wuauserv", "BITS", "WinDefend",
     "MpsSvc", "Schedule", "EventLog", "PlugPlay", "Winmgmt",
