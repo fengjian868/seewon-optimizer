@@ -22,7 +22,7 @@ class OptimizeView(SubPage):
         super().__init__(
             master,
             title="一键优化系统",
-            desc="清理临时文件/启动项/服务/注册表，释放内存，关闭贴靠布局与三指/四指触摸手势。优化前自动创建还原点。",
+            desc="清理临时文件/启动项/服务/注册表，释放内存，关闭贴靠布局与三指/四指触摸手势，卸载无线投屏/课堂助手。优化前自动创建还原点。",
             back_command=back_command, **kw,
         )
         body = self.body()
@@ -129,6 +129,14 @@ class OptimizeView(SubPage):
         self._append_log(f"  禁用启动项：{result.disabled_startup}")
         self._append_log(f"  禁用服务：{result.disabled_services}")
         self._append_log(f"  清理注册表项：{result.reg_cleaned}")
+        if result.uninstalled_bloat:
+            self._append_log(f"  卸载软件：{len(result.uninstalled_bloat)} 个")
+            for name in result.uninstalled_bloat:
+                self._append_log(f"    ✓ {name}")
+        if result.uninstall_failed:
+            self._append_log(f"  卸载失败：{len(result.uninstall_failed)} 个")
+            for name in result.uninstall_failed:
+                self._append_log(f"    ✗ {name}")
         if result.mem_before_mb and result.mem_after_mb:
             delta = result.mem_before_mb - result.mem_after_mb
             self._append_log(

@@ -36,6 +36,7 @@ OPTIMIZE_ITEMS = [
     ("seewo",       "希沃特定项清理"),
     ("snap",        "关闭 Windows 贴靠布局"),
     ("touchpad",    "关闭三指/四指触摸手势"),
+    ("uninstall_bloat", "卸载无线投屏/课堂助手"),
 ]
 
 
@@ -61,6 +62,13 @@ KEEP_STARTUP_KEYWORDS = (
 )
 # 明确要禁用的常见希沃非必要启动项（仅用于注释说明，非保留即禁用）
 REMOVE_STARTUP_HINTS = ("无线投屏", "希沃课堂助手")
+
+# ---- 一键优化中可卸载的希沃非必要软件 ----
+BLOATWARE_TARGETS = {
+    "无线投屏": ("无线投屏", "无线传屏", "screenmirror", "mirror", "传屏", "seewomirror"),
+    "希沃课堂助手": ("课堂助手", "classassistant", "seewo assistant", "class assistant"),
+}
+
 KEEP_SERVICES = {
     "SeewoService", "SeewoMain", "wuauserv", "BITS", "WinDefend",
     "MpsSvc", "Schedule", "EventLog", "PlugPlay", "Winmgmt",
@@ -88,9 +96,15 @@ class OptResult:
     reg_cleaned: int = 0
     mem_before_mb: int = 0
     mem_after_mb: int = 0
+    uninstalled_bloat: list[str] = None
+    uninstall_failed: list[str] = None
     errors: list[str] = None
 
     def __post_init__(self):
+        if self.uninstalled_bloat is None:
+            self.uninstalled_bloat = []
+        if self.uninstall_failed is None:
+            self.uninstall_failed = []
         if self.errors is None:
             self.errors = []
 
@@ -418,6 +432,32 @@ class Optimizer:
         self.record.items["touchpad"] = backed
         log(f"  三指/四指触摸手势已关闭（{len(backed)} 项）")
 
+    # ---- 10. 卸载无线投屏/希沃课堂助手 ----
+    def _opt_uninstall_bloat(self, log: LogCB) -> None:
+        uninstalled: list[str] = []
+        failed: list[str] = []
+
+        for label, keywords in BLOATWARE_TARGETS.items():
+            targets = _find_uninstall_entries(keywords)
+            if not targets:
+                log(f"  未找到 {label}")
+                continue
+            for display_name, cmd in targets:
+                log(f"  正在卸载：{display_name}")
+                if _run_uninstall_silent(display_name, cmd, log):
+                    uninstalled.append(display_name)
+                else:
+                    failed.append(display_name)
+
+        # 卸载操作不可回滚，仅记录已卸载列表用于汇总
+        self.record.items["uninstall_bloat"] = {
+            "uninstalled": uninstalled,
+            "failed": failed,
+        }
+        self.result.uninstalled_bloat = uninstalled
+        self.result.uninstall_failed = failed
+        log(f"  卸载完成 {len(uninstalled)} 个，失败 {len(failed)} 个")
+
 
 # ---- 辅助函数 ----
 def _ensure_key(hive, path: str) -> None:
@@ -464,6 +504,91 @@ def _set_reg_dword(hive, key_path: str, name: str, new_value: int) -> list[dict]
     except Exception:
         pass
     return backed
+
+
+def _find_uninstall_entries(keywords: tuple[str, ...]) -> list[tuple[str, str]]:
+    """根据关键词在已安装软件列表中查找卸载命令。
+
+    返回 [(DisplayName, UninstallString), ...]
+    """
+    results: list[tuple[str, str]] = []
+    uninstall_roots = [
+        (winreg.HKEY_LOCAL_MACHINE,
+         r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_LOCAL_MACHINE,
+         r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_CURRENT_USER,
+         r"Software\Microsoft\Windows\CurrentVersion\Uninstall"),
+    ]
+    for hive, root in uninstall_roots:
+        try:
+            access = winreg.KEY_READ | winreg.KEY_WOW64_64KEY
+            with winreg.OpenKey(hive, root, 0, access) as k:
+                idx = 0
+                while True:
+                    try:
+                        subkey_name = winreg.EnumKey(k, idx)
+                    except OSError:
+                        break
+                    try:
+                        with winreg.OpenKey(hive, f"{root}\\{subkey_name}",
+                                            0, access) as sk:
+                            display_name, _ = winreg.QueryValueEx(sk,
+                                                                  "DisplayName")
+                            uninstall_string, _ = winreg.QueryValueEx(
+                                sk, "UninstallString")
+                            name_lower = display_name.lower()
+                            if any(kw.lower() in name_lower
+                                   for kw in keywords):
+                                results.append((display_name,
+                                                uninstall_string))
+                    except (OSError, FileNotFoundError):
+                        pass
+                    idx += 1
+        except Exception:
+            continue
+    return results
+
+
+def _run_uninstall_silent(display_name: str, cmd: str,
+                          log: LogCB) -> bool:
+    """静默执行卸载命令，尝试常见静默参数。"""
+    cmd = cmd.strip()
+    lowered = cmd.lower()
+
+    # MSI 安装包：改为静默卸载 /qn
+    if "msiexec" in lowered:
+        silent_cmd = lowered.replace("/i", "/x").replace("/i", "/x")
+        if "/qn" not in silent_cmd and "/qb" not in silent_cmd:
+            silent_cmd += " /qn"
+        try:
+            r = subprocess.run(silent_cmd, shell=True, capture_output=True,
+                               text=True, timeout=180)
+            if r.returncode == 0:
+                return True
+            log(f"    MSI 返回码 {r.returncode}：{r.stderr.strip()}")
+        except Exception as e:
+            log(f"    MSI 卸载异常：{e}")
+        return False
+
+    # EXE 安装包：尝试常见静默参数
+    for arg in ("/S", "/s", "/silent", "/quiet", "/uninstall /s"):
+        try:
+            r = subprocess.run(f'"{cmd}" {arg}', shell=True,
+                               capture_output=True, text=True, timeout=180)
+            if r.returncode == 0:
+                return True
+        except Exception:
+            continue
+
+    # 最后尝试原命令（可能弹出卸载向导）
+    try:
+        r = subprocess.run(f'"{cmd}"', shell=True, capture_output=True,
+                           text=True, timeout=180)
+        return r.returncode == 0
+    except Exception as e:
+        log(f"    卸载异常：{e}")
+        return False
 
 
 def _keep_keyword(name: str) -> bool:

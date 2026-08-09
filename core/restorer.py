@@ -151,6 +151,14 @@ class Restorer:
             result.skipped.append("希沃缓存（已清理，无法恢复）")
             log("  ⊘ 希沃缓存已清理，无法恢复（跳过）")
 
+        # 7. 卸载软件：不可回滚
+        if items.get("uninstall_bloat"):
+            uninstalled = items["uninstall_bloat"].get("uninstalled", [])
+            if uninstalled:
+                result.skipped.append(
+                    f"已卸载软件：{', '.join(uninstalled)}（无法自动恢复）")
+                log(f"  ⊘ 已卸载软件不可自动恢复：{', '.join(uninstalled)}（跳过）")
+
         # 还原成功后删除该记录
         backup_mod.delete_record(timestamp)
         log(f"【完成】共恢复 {result.restored} 项"
