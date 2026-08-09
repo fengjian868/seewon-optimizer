@@ -124,7 +124,29 @@ class Restorer:
                 result.failed.append(f"贴靠 {entry.get('name')}: {e}")
                 log(f"  ✗ 贴靠 {entry.get('name')} 恢复失败：{e}")
 
-        # 5. 希沃缓存：不可回滚
+        # 5. 触摸手势：恢复 DWORD 原值
+        for entry in items.get("touchpad", []):
+            try:
+                hive = HIVE_BY_NAME[entry["hive"]]
+                key_path = entry["key"]
+                name = entry["name"]
+                old_value = entry["old_value"]
+                access = winreg.KEY_WRITE | winreg.KEY_WOW64_64KEY
+                with winreg.OpenKey(hive, key_path, 0, access) as k:
+                    if old_value is None:
+                        try:
+                            winreg.DeleteValue(k, name)
+                        except FileNotFoundError:
+                            pass
+                    else:
+                        winreg.SetValueEx(k, name, 0, winreg.REG_DWORD, old_value)
+                result.restored += 1
+                log(f"  ✓ 恢复触摸手势设置：{name}")
+            except Exception as e:
+                result.failed.append(f"触摸手势 {entry.get('name')}: {e}")
+                log(f"  ✗ 触摸手势 {entry.get('name')} 恢复失败：{e}")
+
+        # 6. 希沃缓存：不可回滚
         if items.get("seewo_cache_cleaned"):
             result.skipped.append("希沃缓存（已清理，无法恢复）")
             log("  ⊘ 希沃缓存已清理，无法恢复（跳过）")

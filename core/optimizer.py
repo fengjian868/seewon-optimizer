@@ -35,6 +35,7 @@ OPTIMIZE_ITEMS = [
     ("defrag",      "磁盘碎片整理"),
     ("seewo",       "希沃特定项清理"),
     ("snap",        "关闭 Windows 贴靠布局"),
+    ("touchpad",    "关闭三指/四指触摸手势"),
 ]
 
 
@@ -389,6 +390,28 @@ class Optimizer:
         self.record.items["snap"] = backed
         log(f"  贴靠布局设置已关闭（{len(backed)} 项）")
 
+    # ---- 9. 关闭三指/四指触摸手势 ----
+    def _opt_touchpad(self, log: LogCB) -> None:
+        backed: list[dict] = []
+        base_key = r"Software\Microsoft\Windows\CurrentVersion\PrecisionTouchPad"
+
+        # 主开关：滑动与点击
+        for name in ("ThreeFingerSlideEnabled", "FourFingerSlideEnabled",
+                     "ThreeFingerTapEnabled", "FourFingerTapEnabled"):
+            backed += _set_reg_dword(winreg.HKEY_CURRENT_USER, base_key, name, 0)
+
+        # 各方向子键
+        directions = ("SwipeUp", "SwipeDown", "SwipeLeft", "SwipeRight")
+        for sub, _label in (
+            (f"{base_key}\\ThreeFingerGestures", "三指"),
+            (f"{base_key}\\FourFingerGestures", "四指"),
+        ):
+            for direction in directions:
+                backed += _set_reg_dword(winreg.HKEY_CURRENT_USER, sub, direction, 0)
+
+        self.record.items["touchpad"] = backed
+        log(f"  三指/四指触摸手势已关闭（{len(backed)} 项）")
+
 
 # ---- 辅助函数 ----
 def _ensure_key(hive, path: str) -> None:
@@ -407,6 +430,27 @@ def _set_reg(hive, key_path: str, name: str, new_value: str) -> list[dict]:
             except FileNotFoundError:
                 old = None
             winreg.SetValueEx(k, name, 0, winreg.REG_SZ, new_value)
+            backed.append({
+                "hive": HIVE_MAP[hive], "key": key_path,
+                "name": name, "old_value": old,
+            })
+    except Exception:
+        pass
+    return backed
+
+
+def _set_reg_dword(hive, key_path: str, name: str, new_value: int) -> list[dict]:
+    """设置注册表 DWORD 值，备份原值。返回备份条目列表。"""
+    backed: list[dict] = []
+    access = winreg.KEY_READ | winreg.KEY_WRITE | winreg.KEY_WOW64_64KEY
+    try:
+        _ensure_key(hive, key_path)
+        with winreg.OpenKey(hive, key_path, 0, access) as k:
+            try:
+                old, _ = winreg.QueryValueEx(k, name)
+            except FileNotFoundError:
+                old = None
+            winreg.SetValueEx(k, name, 0, winreg.REG_DWORD, new_value)
             backed.append({
                 "hive": HIVE_MAP[hive], "key": key_path,
                 "name": name, "old_value": old,

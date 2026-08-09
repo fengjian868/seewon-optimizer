@@ -30,6 +30,7 @@ class BackupRecord:
     #   "services": [{"name":..., "start_before":...}, ...],
     #   "registry": [{"hive":..., "key":..., "name":..., "old_value":...}, ...],
     #   "snap":     [{"key":..., "name":..., "old_value":...}, ...],
+    #   "touchpad": [{"hive":..., "key":..., "name":..., "old_value":...}, ...],
     # }
 
     def to_dict(self) -> dict:

@@ -22,7 +22,7 @@ class OptimizeView(SubPage):
         super().__init__(
             master,
             title="一键优化系统",
-            desc="清理临时文件/启动项/服务/注册表，释放内存，关闭贴靠布局。优化前自动创建还原点。",
+            desc="清理临时文件/启动项/服务/注册表，释放内存，关闭贴靠布局与三指/四指触摸手势。优化前自动创建还原点。",
             back_command=back_command, **kw,
         )
         body = self.body()
