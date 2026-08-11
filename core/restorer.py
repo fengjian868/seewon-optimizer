@@ -146,12 +146,47 @@ class Restorer:
                 result.failed.append(f"触摸手势 {entry.get('name')}: {e}")
                 log(f"  ✗ 触摸手势 {entry.get('name')} 恢复失败：{e}")
 
-        # 6. 希沃缓存：不可回滚
+        # 6. 显示设置：恢复 DPI 注册表与分辨率
+        for entry in items.get("display", []):
+            try:
+                if entry.get("type") == "resolution":
+                    width = entry.get("width", 0)
+                    height = entry.get("height", 0)
+                    if width and height:
+                        from core.optimizer import _set_resolution
+                        if _set_resolution(width, height):
+                            result.restored += 1
+                            log(f"  ✓ 恢复分辨率：{width}x{height}")
+                        else:
+                            result.failed.append(f"分辨率 {width}x{height}")
+                            log(f"  ✗ 恢复分辨率 {width}x{height} 失败")
+                    continue
+
+                hive = HIVE_BY_NAME[entry["hive"]]
+                key_path = entry["key"]
+                name = entry["name"]
+                old_value = entry["old_value"]
+                access = winreg.KEY_WRITE | winreg.KEY_WOW64_64KEY
+                with winreg.OpenKey(hive, key_path, 0, access) as k:
+                    if old_value is None:
+                        try:
+                            winreg.DeleteValue(k, name)
+                        except FileNotFoundError:
+                            pass
+                    else:
+                        winreg.SetValueEx(k, name, 0, winreg.REG_DWORD, old_value)
+                result.restored += 1
+                log(f"  ✓ 恢复显示设置：{name}")
+            except Exception as e:
+                result.failed.append(f"显示设置 {entry.get('name')}: {e}")
+                log(f"  ✗ 显示设置 {entry.get('name')} 恢复失败：{e}")
+
+        # 7. 希沃缓存：不可回滚
         if items.get("seewo_cache_cleaned"):
             result.skipped.append("希沃缓存（已清理，无法恢复）")
             log("  ⊘ 希沃缓存已清理，无法恢复（跳过）")
 
-        # 7. 卸载软件：不可回滚
+        # 8. 卸载软件：不可回滚
         if items.get("uninstall_bloat"):
             uninstalled = items["uninstall_bloat"].get("uninstalled", [])
             if uninstalled:

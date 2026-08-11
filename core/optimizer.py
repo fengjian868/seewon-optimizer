@@ -37,6 +37,7 @@ OPTIMIZE_ITEMS = [
     ("snap",        "关闭 Windows 贴靠布局"),
     ("touchpad",    "关闭三指/四指触摸手势"),
     ("uninstall_bloat", "卸载无线投屏/课堂助手"),
+    ("display",     "设置缩放125%与分辨率1920x1080"),
 ]
 
 
@@ -458,6 +459,43 @@ class Optimizer:
         self.result.uninstall_failed = failed
         log(f"  卸载完成 {len(uninstalled)} 个，失败 {len(failed)} 个")
 
+    # ---- 11. 设置缩放 125% 与分辨率 1920x1080 ----
+    def _opt_display(self, log: LogCB) -> None:
+        backed: list[dict] = []
+
+        # 备份当前分辨率
+        cur_w, cur_h = _get_current_resolution()
+        backed.append({
+            "type": "resolution",
+            "width": cur_w,
+            "height": cur_h,
+        })
+
+        # DPI：LogPixels 96=100%, 120=125%, 144=150%
+        target_dpi = 120
+        backed += _set_reg_dword(
+            winreg.HKEY_CURRENT_USER,
+            r"Control Panel\Desktop",
+            "LogPixels",
+            target_dpi,
+        )
+        backed += _set_reg_dword(
+            winreg.HKEY_CURRENT_USER,
+            r"Control Panel\Desktop",
+            "Win8DpiScaling",
+            1,
+        )
+
+        # 设置分辨率
+        ok = _set_resolution(1920, 1080)
+        if ok:
+            log("  分辨率已设为 1920x1080")
+        else:
+            log("  ✗ 分辨率设置失败，可能是当前显示器不支持")
+
+        self.record.items["display"] = backed
+        log("  显示缩放已设为 125%，注销或重启后完全生效")
+
 
 # ---- 辅助函数 ----
 def _ensure_key(hive, path: str) -> None:
@@ -602,3 +640,84 @@ def _used_memory_mb() -> int:
         return int(psutil.virtual_memory().used / 1024 / 1024)
     except ImportError:
         return 0
+
+
+# ---- 显示设置相关 API ----
+class _DEVMODE(ctypes.Structure):
+    _fields_ = [
+        ("dmDeviceName", ctypes.c_ubyte * 32),
+        ("dmSpecVersion", ctypes.c_ushort),
+        ("dmDriverVersion", ctypes.c_ushort),
+        ("dmSize", ctypes.c_ushort),
+        ("dmDriverExtra", ctypes.c_ushort),
+        ("dmFields", ctypes.c_ulong),
+        ("dmOrientation", ctypes.c_short),
+        ("dmPaperSize", ctypes.c_short),
+        ("dmPaperLength", ctypes.c_short),
+        ("dmPaperWidth", ctypes.c_short),
+        ("dmScale", ctypes.c_short),
+        ("dmCopies", ctypes.c_short),
+        ("dmDefaultSource", ctypes.c_short),
+        ("dmPrintQuality", ctypes.c_short),
+        ("dmColor", ctypes.c_short),
+        ("dmDuplex", ctypes.c_short),
+        ("dmYResolution", ctypes.c_short),
+        ("dmTTOption", ctypes.c_short),
+        ("dmCollate", ctypes.c_short),
+        ("dmFormName", ctypes.c_ubyte * 32),
+        ("dmLogPixels", ctypes.c_ushort),
+        ("dmBitsPerPel", ctypes.c_ulong),
+        ("dmPelsWidth", ctypes.c_ulong),
+        ("dmPelsHeight", ctypes.c_ulong),
+        ("dmDisplayFlags", ctypes.c_ulong),
+        ("dmDisplayFrequency", ctypes.c_ulong),
+        ("dmICMMethod", ctypes.c_ulong),
+        ("dmICMIntent", ctypes.c_ulong),
+        ("dmMediaType", ctypes.c_ulong),
+        ("dmDitherType", ctypes.c_ulong),
+        ("dmReserved1", ctypes.c_ulong),
+        ("dmReserved2", ctypes.c_ulong),
+        ("dmPanningWidth", ctypes.c_ulong),
+        ("dmPanningHeight", ctypes.c_ulong),
+    ]
+
+
+def _get_current_resolution() -> tuple[int, int]:
+    """获取当前屏幕分辨率。"""
+    try:
+        user32 = ctypes.windll.user32
+        dm = _DEVMODE()
+        dm.dmSize = ctypes.sizeof(_DEVMODE)
+        ENUM_CURRENT_SETTINGS = -1
+        if user32.EnumDisplaySettingsW(None, ENUM_CURRENT_SETTINGS,
+                                       ctypes.byref(dm)):
+            return int(dm.dmPelsWidth), int(dm.dmPelsHeight)
+    except Exception:
+        pass
+    return 0, 0
+
+
+def _set_resolution(width: int, height: int) -> bool:
+    """使用 ChangeDisplaySettingsW 设置屏幕分辨率。"""
+    try:
+        user32 = ctypes.windll.user32
+        dm = _DEVMODE()
+        dm.dmSize = ctypes.sizeof(_DEVMODE)
+        ENUM_CURRENT_SETTINGS = -1
+        if not user32.EnumDisplaySettingsW(None, ENUM_CURRENT_SETTINGS,
+                                           ctypes.byref(dm)):
+            return False
+
+        dm.dmPelsWidth = width
+        dm.dmPelsHeight = height
+        dm.dmFields = 0x00080000 | 0x00100000  # DM_PELSWIDTH | DM_PELSHEIGHT
+
+        CDS_TEST = 0x00000002
+        CDS_UPDATEREGISTRY = 0x00000001
+        if user32.ChangeDisplaySettingsW(ctypes.byref(dm), CDS_TEST) != 0:
+            return False
+        result = user32.ChangeDisplaySettingsW(ctypes.byref(dm),
+                                                CDS_UPDATEREGISTRY)
+        return result in (0, 1)  # SUCCESSFUL 或 RESTART
+    except Exception:
+        return False
